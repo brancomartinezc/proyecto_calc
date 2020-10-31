@@ -30,10 +30,15 @@ public class Calculadora {
 			if(archivos!=null) {
 				for(int i=0; i<archivos.length; i++) {
 					
-					c = cl.loadClass(archivos[i].substring(0, archivos[i].indexOf(".")));
-					PluginFunction pf = (PluginFunction) c.getDeclaredConstructor().newInstance();
-					plugins.add(pf);
-					System.out.println(pf.getPluginName());
+					if(archivos[i].endsWith(".class")) {
+						c = cl.loadClass(archivos[i].substring(0, archivos[i].indexOf(".")));
+						
+						PluginFunction pf = (PluginFunction) c.getDeclaredConstructor().newInstance();
+						plugins.add(pf);
+						
+						System.out.println("nombre clase: "+archivos[i]+" - clase cargada: "+pf.getPluginName());
+					}
+					
 				}
 			}else {
 				System.out.print("NULO");

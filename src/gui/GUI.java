@@ -103,7 +103,9 @@ public class GUI extends JFrame {
 		String[] nombres_plugs = c.getNombresPlugins();
 		
 		for(int i=0; i<nombres_plugs.length; i++) {
-			comboBox.addItem(nombres_plugs[i].substring(0, nombres_plugs[i].indexOf(".")));
+			if(nombres_plugs[i].endsWith(".class")) {
+				comboBox.addItem(nombres_plugs[i].substring(0, nombres_plugs[i].indexOf(".")));
+			}
 		}
 		
 		btn_calcular.addActionListener(new ActionListener() {
