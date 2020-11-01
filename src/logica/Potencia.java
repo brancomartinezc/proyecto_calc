@@ -7,7 +7,7 @@ public class Potencia implements PluginFunction{
 	
 	@Override
 	public String getPluginName() {
-		return "Suma";
+		return "Potencia";
 	}
 
 	@Override

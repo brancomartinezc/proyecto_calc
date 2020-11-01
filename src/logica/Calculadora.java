@@ -22,7 +22,7 @@ public class Calculadora {
 		ClassLoader cl;
 		//String[] archivos;
 		Class c;
-		
+		plugins= new ArrayList();
 		try {
 			cl = new PluginClassLoader(ruta);
 			archivos = ruta.list();

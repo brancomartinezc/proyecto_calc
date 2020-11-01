@@ -6,7 +6,7 @@ public class Resta implements PluginFunction{
 	
 	@Override
 	public String getPluginName() {
-		return "Suma";
+		return "Resta";
 	}
 
 	@Override
