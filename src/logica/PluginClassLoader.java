@@ -34,8 +34,6 @@ public class PluginClassLoader extends ClassLoader{
 				
 				f= new File(ruta,nombre_archivo);
 				
-				//System.out.println(f.toString());
-				
 				longitud= (int)f.length();
 				classbytes= new byte[longitud];
 				in= new DataInputStream(new FileInputStream(f));

@@ -16,7 +16,7 @@ public class Suma implements PluginFunction{
 	}
 
 	@Override
-	public int getResult() {
+	public float getResult() {
 		return num1+num2;
 	}
 

@@ -19,7 +19,7 @@ public interface PluginFunction {
 	 * Obtiene el resultado de la operacion.
 	 * @return resultado.
 	 */
-	public int getResult();
+	public float getResult();
 	
 	/**
 	 * 

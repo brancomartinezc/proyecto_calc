@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import javax.swing.GroupLayout;
@@ -50,7 +52,7 @@ public class GUI extends JFrame {
 	 */
 	public GUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 199, 219);
+		setBounds(100, 100, 242, 249);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -62,7 +64,7 @@ public class GUI extends JFrame {
 		JLabel lbl_calc = new JLabel("Calculadora");
 		panel_superior.add(lbl_calc);
 		
-		
+		//DefaultComboBoxModel combodef;
 		panel_superior.add(comboBox);
 		
 		JPanel panel_inferior = new JPanel();
@@ -93,36 +95,37 @@ public class GUI extends JFrame {
 		panel_inferior.add(lbl_res);
 		panel_inferior.add(lbl_res_num);
 		
-		JButton btn_actualizar = new JButton("Actualizar operaciones");
+		JButton btn_actualizar = new JButton("Actualizar plugins");
 		panel_inferior.add(btn_actualizar);
 		
 		Calculadora c=new Calculadora();
 		
+		//Busco los plugins disponibles
 		c.getPlugins();
 		
+		//Cargo las opciones en el combobox
 		String[] nombres_plugs = c.getNombresPlugins();
-		
 		for(int i=0; i<nombres_plugs.length; i++) {
-			if(nombres_plugs[i].endsWith(".class")) {
-				comboBox.addItem(nombres_plugs[i].substring(0, nombres_plugs[i].indexOf(".")));
-			}
+			comboBox.addItem(nombres_plugs[i]);
 		}
 		
+		//accion del boton de calculo
 		btn_calcular.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int num1,num2,resultado;
+				int num1,num2;
+				float resultado;
 				String operacion;
 				boolean hubo_error;
 				String descrip_error;
 				
 				try {
+					//obtengo los numeros y el tipo de operacion
 					num1= Integer.parseInt(textField_num1.getText());
 					num2= Integer.parseInt(textField_num2.getText());
-					
 					operacion = (String) comboBox.getItemAt(comboBox.getSelectedIndex());
 					
+					//realizo el calculo y verifico si hubo error
 					c.runPlugin(num1,num2,operacion);
-					
 					hubo_error=c.getUltimaOperacionError();
 					
 					if(hubo_error) {
@@ -134,7 +137,6 @@ public class GUI extends JFrame {
 					}
 					
 					
-					
 				}catch(NumberFormatException ex) {
 					JOptionPane.showMessageDialog(null, "Ingrese datos correctos");
 				}
@@ -142,17 +144,20 @@ public class GUI extends JFrame {
 			}
 		});
 		
-		//ESTO NO ANDA
+		//accion del boton de actualizacion
 		btn_actualizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				comboBox=new JComboBox<String>();
-				panel_superior.add(comboBox);
-				c.getPlugins();
-				String[] nombres_plugs = c.getNombresPlugins();
 				
+				//actualizo los plugins disponibles
+				c.getPlugins();
+				
+				//actualizo las opciones del combobox
+				comboBox.removeAllItems();
+				String[] nombres_plugs = c.getNombresPlugins();
 				for(int i=0; i<nombres_plugs.length; i++) {
-					comboBox.addItem(nombres_plugs[i].substring(0, nombres_plugs[i].indexOf(".")));
+					comboBox.addItem(nombres_plugs[i]);
 				}
+				
 			}
 		});
 		

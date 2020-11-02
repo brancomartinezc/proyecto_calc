@@ -14,15 +14,11 @@ public class Potencia implements PluginFunction{
 	public void setParameter(int n1, int n2) {
 		num1=n1;
 		num2=n2;
-		
-		if(num2<0) {
-			error=true;
-		}
 	}
 
 	@Override
-	public int getResult() {
-		return (int) Math.pow(num1,num2);
+	public float getResult() {
+		return (float) Math.pow(num1,num2);
 	}
 
 	@Override

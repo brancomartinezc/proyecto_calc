@@ -20,15 +20,12 @@ public class Division implements PluginFunction{
 		if(n2==0) {
 			error=true;
 			error_descripcion="Division por 0.";
-		}else if(n2>n1) {
-			error=true;
-			error_descripcion="Divisor mas grande que dividendo.";
 		}
 	}
 
 	@Override
-	public int getResult() {
-		return num1/num2;
+	public float getResult() {
+		return (float) num1/num2;
 	}
 	
 	@Override
