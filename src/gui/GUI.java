@@ -25,7 +25,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class GUI extends JFrame {
-	JComboBox comboBox = new JComboBox<String>();
+	private JComboBox comboBox = new JComboBox<String>();
 	private JPanel contentPane;
 	private JTextField textField_num1;
 	private JTextField textField_num2;
@@ -51,8 +51,9 @@ public class GUI extends JFrame {
 	 * Create the frame.
 	 */
 	public GUI() {
+		//Preparacion de la GUI
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 242, 249);
+		setBounds(100, 100, 266, 209);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -64,11 +65,10 @@ public class GUI extends JFrame {
 		JLabel lbl_calc = new JLabel("Calculadora");
 		panel_superior.add(lbl_calc);
 		
-		//DefaultComboBoxModel combodef;
 		panel_superior.add(comboBox);
 		
-		JPanel panel_inferior = new JPanel();
-		contentPane.add(panel_inferior, BorderLayout.CENTER);
+		JPanel panel_central = new JPanel();
+		contentPane.add(panel_central, BorderLayout.CENTER);
 		
 		textField_num1 = new JTextField();
 		textField_num1.setColumns(10);
@@ -81,19 +81,22 @@ public class GUI extends JFrame {
 		JLabel lbl_res = new JLabel("Resultado:");
 		
 		JLabel lbl_res_num = new JLabel("0");
-		panel_inferior.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel_central.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JLabel lbl_num1 = new JLabel("Numero 1:");
-		panel_inferior.add(lbl_num1);
-		panel_inferior.add(textField_num1);
-		panel_inferior.add(lbl_num2);
-		panel_inferior.add(textField_num2);
+		panel_central.add(lbl_num1);
+		panel_central.add(textField_num1);
+		panel_central.add(lbl_num2);
+		panel_central.add(textField_num2);
 		
 		JButton btn_calcular = new JButton("Calcular");
 		
-		panel_inferior.add(btn_calcular);
-		panel_inferior.add(lbl_res);
-		panel_inferior.add(lbl_res_num);
+		panel_central.add(btn_calcular);
+		panel_central.add(lbl_res);
+		panel_central.add(lbl_res_num);
+		
+		JPanel panel_inferior = new JPanel();
+		contentPane.add(panel_inferior, BorderLayout.SOUTH);
 		
 		JButton btn_actualizar = new JButton("Actualizar plugins");
 		panel_inferior.add(btn_actualizar);
@@ -104,7 +107,7 @@ public class GUI extends JFrame {
 		c.getPlugins();
 		
 		//Cargo las opciones en el combobox
-		String[] nombres_plugs = c.getNombresPlugins();
+		String[] nombres_plugs = c.getPluginsNames();
 		for(int i=0; i<nombres_plugs.length; i++) {
 			comboBox.addItem(nombres_plugs[i]);
 		}
@@ -115,8 +118,6 @@ public class GUI extends JFrame {
 				int num1,num2;
 				float resultado;
 				String operacion;
-				boolean hubo_error;
-				String descrip_error;
 				
 				try {
 					//obtengo los numeros y el tipo de operacion
@@ -124,21 +125,14 @@ public class GUI extends JFrame {
 					num2= Integer.parseInt(textField_num2.getText());
 					operacion = (String) comboBox.getItemAt(comboBox.getSelectedIndex());
 					
-					//realizo el calculo y verifico si hubo error
-					c.runPlugin(num1,num2,operacion);
-					hubo_error=c.getUltimaOperacionError();
-					
-					if(hubo_error) {
-						descrip_error=c.getDescripcionError();
-						JOptionPane.showMessageDialog(null, "ERROR: "+descrip_error);
-					}else {
-						resultado=c.getUltimoResultado();
-						lbl_res_num.setText(""+resultado);
-					}
-					
+					//realizo el calculo y actualizo el label
+					resultado=c.runPlugin(num1,num2,operacion);
+					lbl_res_num.setText(String.format("%.2f", resultado));
 					
 				}catch(NumberFormatException ex) {
-					JOptionPane.showMessageDialog(null, "Ingrese datos correctos");
+					JOptionPane.showMessageDialog(null, "Ingrese datos correctos.");
+				}catch(ArithmeticException ex2) {
+					JOptionPane.showMessageDialog(null, "Error aritmetico.");
 				}
 				
 			}
@@ -153,7 +147,7 @@ public class GUI extends JFrame {
 				
 				//actualizo las opciones del combobox
 				comboBox.removeAllItems();
-				String[] nombres_plugs = c.getNombresPlugins();
+				String[] nombres_plugs = c.getPluginsNames();
 				for(int i=0; i<nombres_plugs.length; i++) {
 					comboBox.addItem(nombres_plugs[i]);
 				}

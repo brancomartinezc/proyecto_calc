@@ -2,25 +2,25 @@ package logica;
 import java.io.File;
 import java.util.*;
 
+import javax.swing.JOptionPane;
+
 public class Calculadora {
 	private File ruta;
 	private List plugins;
 	private String[] archivos;
-	private float ultimo_resultado;
 	private int cant_plugs;
-	private boolean ultima_operacion_error;
-	private String descrip_error;
 	
 	public Calculadora() {
-		//IMPORTANTE: antes de exportar el jar cambiar la ruta a "./plugins"
-		//ya que el jar va a estar en la misma carpeta bin
-		ruta= new File("./bin/plugins");
+		//ruta= new File("./bin/plugins");
+		ruta= new File("./plugins");
 	}
 	
 	public void getPlugins() {
 		ClassLoader cl;
-		Class c;
+		Class clase;
+		Class[] interfaces;
 		plugins= new ArrayList();
+		PluginFunction pf;
 		
 		try {
 			cl = new PluginClassLoader(ruta);
@@ -29,20 +29,32 @@ public class Calculadora {
 			
 			if(archivos!=null) {
 				for(int i=0; i<archivos.length; i++) {
+					
 					if(archivos[i].endsWith(".class")) {
 						//cargo la clase, la instacio y la agrego a la lista de plugins
-						c = cl.loadClass(archivos[i].substring(0, archivos[i].indexOf(".")));
-						PluginFunction pf = (PluginFunction) c.getDeclaredConstructor().newInstance();
-						plugins.add(pf);
+						clase = cl.loadClass(archivos[i].substring(0, archivos[i].indexOf(".")));
+						interfaces= clase.getInterfaces();
 						
-						cant_plugs++;
-						System.out.println("nombre clase: "+archivos[i]+" - clase cargada: "+pf.getPluginName());
+						for(Class intf: interfaces) {
+							//Si la clase implementa PluginFunction la agrego a la lista de plugisn
+							if(intf.getName().contentEquals("logica.PluginFunction")) {
+								//JOptionPane.showMessageDialog(null,"instancio: "+archivos[i]);
+								pf = (PluginFunction) clase.getDeclaredConstructor().newInstance();
+								//JOptionPane.showMessageDialog(null,"Agrego plugin a la lista: "+archivos[i]);
+								plugins.add(pf);
+								//JOptionPane.showMessageDialog(null,"Aumento cantidad: "+archivos[i]);
+								cant_plugs++;
+								break;
+							}
+						}
+						
 					}
+					
 				}
+				
 			}else {
-				System.out.print("NULO");
+				JOptionPane.showMessageDialog(null, "Error en la ruta.");;
 			}
-			
 			
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -50,7 +62,7 @@ public class Calculadora {
 		
 	}
 	
-	public String[] getNombresPlugins() {
+	public String[] getPluginsNames() {
 		String[] nombres=new String[cant_plugs];
 		Iterator it = plugins.iterator();
 		PluginFunction plug;
@@ -65,48 +77,31 @@ public class Calculadora {
 		return nombres;
 	}
 	
-	public void runPlugin(int num1, int num2, String operacion) {
+	public float runPlugin(int num1, int num2, String operacion) {
 		Iterator it = plugins.iterator();
 		PluginFunction plug;
 		String nombre_plug;
+		float res=0;
 		
-		while(it.hasNext()) {
-			plug=(PluginFunction) it.next();
-			
-			nombre_plug=plug.getPluginName();
-			System.out.println("comp: "+nombre_plug+" - "+operacion);
-			if(operacion.contentEquals(nombre_plug)) {
-				System.out.println("entra");
-				plug.setParameter(num1, num2);
+		try {
+			//Busco la clase de la operacion en la lista
+			while(it.hasNext()) {
+				plug=(PluginFunction) it.next();
+				nombre_plug=plug.getPluginName();
 				
-				//Si hubo error en los parametros
-				if(plug.hasError()) {
-					ultima_operacion_error=true;
-					descrip_error=plug.descripcionError();
-				}else {
-					ultimo_resultado=plug.getResult();
-					ultima_operacion_error=false;
-					descrip_error="";
+				//Si encontre la clase de la operacion
+				if(operacion.contentEquals(nombre_plug)) {
+					res=plug.doOperation(num1,num2);
 				}
 				
-				
 			}
-			
+		}catch(ArithmeticException e) {
+			throw new ArithmeticException();
 		}
-
+		
+		return res;
 	}
 	
-	public float getUltimoResultado() {
-		return ultimo_resultado;
-	}
-	
-	public boolean getUltimaOperacionError() {
-		return ultima_operacion_error;
-	}
-	
-	public String getDescripcionError() {
-		return descrip_error;
-	}
 }
 
 

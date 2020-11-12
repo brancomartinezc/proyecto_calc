@@ -1,6 +1,8 @@
 package logica;
 import java.io.*;
 
+import javax.swing.JOptionPane;
+
 public class PluginClassLoader extends ClassLoader{
 	private File ruta;
 	
@@ -9,7 +11,7 @@ public class PluginClassLoader extends ClassLoader{
 	}
 	
 	public Class loadClass (String nombre) throws ClassNotFoundException { 
-      return loadClass(nombre, true); 
+		return loadClass(nombre, true); 
     }
 	
 	public Class loadClass(String nombre_clase, boolean resolve) throws ClassNotFoundException {
@@ -30,6 +32,7 @@ public class PluginClassLoader extends ClassLoader{
 			}
 			
 			if(c==null) {
+				//JOptionPane.showMessageDialog(null, "cargando clase: "+nombre_clase);
 				nombre_archivo= nombre_clase.replace('.', File.separatorChar)+".class";
 				
 				f= new File(ruta,nombre_archivo);
@@ -39,8 +42,9 @@ public class PluginClassLoader extends ClassLoader{
 				in= new DataInputStream(new FileInputStream(f));
 				in.readFully(classbytes);
 				in.close();
-				
+				//JOptionPane.showMessageDialog(null, "defineClass: "+nombre_clase);
 				c=defineClass(null, classbytes, 0, longitud);
+				//JOptionPane.showMessageDialog(null, "Sale de defineClass: "+nombre_clase);
 			}
 			
 			if(resolve) {
