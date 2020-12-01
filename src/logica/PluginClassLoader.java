@@ -3,6 +3,7 @@ import java.io.*;
 
 import javax.swing.JOptionPane;
 
+//Fuente del codigo de esta clase: https://javaranch.com/journal/200607/Plugins.html
 public class PluginClassLoader extends ClassLoader{
 	private File ruta;
 	
@@ -32,7 +33,6 @@ public class PluginClassLoader extends ClassLoader{
 			}
 			
 			if(c==null) {
-				//JOptionPane.showMessageDialog(null, "cargando clase: "+nombre_clase);
 				nombre_archivo= nombre_clase.replace('.', File.separatorChar)+".class";
 				
 				f= new File(ruta,nombre_archivo);
@@ -42,9 +42,7 @@ public class PluginClassLoader extends ClassLoader{
 				in= new DataInputStream(new FileInputStream(f));
 				in.readFully(classbytes);
 				in.close();
-				//JOptionPane.showMessageDialog(null, "defineClass: "+nombre_clase);
 				c=defineClass(null, classbytes, 0, longitud);
-				//JOptionPane.showMessageDialog(null, "Sale de defineClass: "+nombre_clase);
 			}
 			
 			if(resolve) {

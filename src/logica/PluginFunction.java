@@ -12,6 +12,6 @@ public interface PluginFunction {
 	 * Obtiene el resultado de la operacion.
 	 * @return resultado.
 	 */
-	public float doOperation(int n1, int n2);
+	public float doOperation(int n1, int n2) throws ArithmeticException;
 	
 }

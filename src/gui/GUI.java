@@ -101,10 +101,14 @@ public class GUI extends JFrame {
 		JButton btn_actualizar = new JButton("Actualizar plugins");
 		panel_inferior.add(btn_actualizar);
 		
-		Calculadora c=new Calculadora();
+		Calculadora c = new Calculadora();
 		
 		//Busco los plugins disponibles
-		c.getPlugins();
+		try {
+			c.getPlugins();
+		}catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getClass().getSimpleName()+": "+ex.getMessage());
+		}
 		
 		//Cargo las opciones en el combobox
 		String[] nombres_plugs = c.getPluginsNames();
@@ -126,7 +130,7 @@ public class GUI extends JFrame {
 					operacion = (String) comboBox.getItemAt(comboBox.getSelectedIndex());
 					
 					//realizo el calculo y actualizo el label
-					resultado=c.runPlugin(num1,num2,operacion);
+					resultado = c.runPlugin(num1,num2,operacion);
 					lbl_res_num.setText(String.format("%.2f", resultado));
 					
 				}catch(NumberFormatException ex) {
@@ -143,13 +147,18 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				//actualizo los plugins disponibles
-				c.getPlugins();
-				
-				//actualizo las opciones del combobox
-				comboBox.removeAllItems();
-				String[] nombres_plugs = c.getPluginsNames();
-				for(int i=0; i<nombres_plugs.length; i++) {
-					comboBox.addItem(nombres_plugs[i]);
+				try {
+					c.getPlugins();
+					
+					//actualizo las opciones del combobox
+					comboBox.removeAllItems();
+					String[] nombres_plugs = c.getPluginsNames();
+					for(int i=0; i<nombres_plugs.length; i++) {
+						comboBox.addItem(nombres_plugs[i]);
+					}
+					
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, ex.getClass().getSimpleName()+": "+ex.getMessage());
 				}
 				
 			}

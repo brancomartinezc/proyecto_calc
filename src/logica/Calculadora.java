@@ -11,57 +11,55 @@ public class Calculadora {
 	private int cant_plugs;
 	
 	public Calculadora() {
-		//ruta= new File("./bin/plugins");
-		ruta= new File("./plugins");
+		ruta= new File("./bin/plugins");
+		//ruta= new File("./plugins");
 	}
 	
-	public void getPlugins() {
+	/**
+	 * Obtiene la lista de plugins y los carga.
+	 * @throws Exception 
+	 */
+	public void getPlugins() throws Exception {
 		ClassLoader cl;
 		Class clase;
 		Class[] interfaces;
 		plugins= new ArrayList();
 		PluginFunction pf;
 		
-		try {
-			cl = new PluginClassLoader(ruta);
-			archivos = ruta.list();
-			cant_plugs=0;
-			
-			if(archivos!=null) {
-				for(int i=0; i<archivos.length; i++) {
+		cl = new PluginClassLoader(ruta);
+		archivos = ruta.list();
+		cant_plugs=0;
+		
+		if(archivos!=null) {
+			for(int i=0; i<archivos.length; i++) {
+				
+				if(archivos[i].endsWith(".class")) {
+					//cargo la clase
+					clase = cl.loadClass("logica."+archivos[i].substring(0, archivos[i].indexOf(".")));
+					interfaces= clase.getInterfaces();
 					
-					if(archivos[i].endsWith(".class")) {
-						//cargo la clase, la instacio y la agrego a la lista de plugins
-						clase = cl.loadClass(archivos[i].substring(0, archivos[i].indexOf(".")));
-						interfaces= clase.getInterfaces();
-						
-						for(Class intf: interfaces) {
-							//Si la clase implementa PluginFunction la agrego a la lista de plugisn
-							if(intf.getName().contentEquals("logica.PluginFunction")) {
-								//JOptionPane.showMessageDialog(null,"instancio: "+archivos[i]);
-								pf = (PluginFunction) clase.getDeclaredConstructor().newInstance();
-								//JOptionPane.showMessageDialog(null,"Agrego plugin a la lista: "+archivos[i]);
-								plugins.add(pf);
-								//JOptionPane.showMessageDialog(null,"Aumento cantidad: "+archivos[i]);
-								cant_plugs++;
-								break;
-							}
+					for(Class intf: interfaces) {
+						//Si la clase implementa PluginFunction la instancio y agrego a la lista de plugins
+						if(intf.getName().contentEquals("logica.PluginFunction")) {
+							pf = (PluginFunction) clase.getDeclaredConstructor().newInstance();
+							plugins.add(pf);
+							cant_plugs++;
+							break;
 						}
-						
 					}
 					
 				}
 				
-			}else {
-				JOptionPane.showMessageDialog(null, "Error en la ruta.");;
 			}
 			
-		}catch(Exception e) {
-			e.printStackTrace();
 		}
 		
 	}
 	
+	/**
+	 * Obtiene los nombres de los plugins.
+	 * @return Arreglo de strings.
+	 */
 	public String[] getPluginsNames() {
 		String[] nombres=new String[cant_plugs];
 		Iterator it = plugins.iterator();
@@ -77,6 +75,13 @@ public class Calculadora {
 		return nombres;
 	}
 	
+	/**
+	 * Corre el plugin.
+	 * @param num1 Numero 1.
+	 * @param num2 Numero 2.
+	 * @param operacion Tipo de operacion.
+	 * @return Resultado de la operacion.
+	 */
 	public float runPlugin(int num1, int num2, String operacion) {
 		Iterator it = plugins.iterator();
 		PluginFunction plug;
